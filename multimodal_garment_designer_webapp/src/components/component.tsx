@@ -42,6 +42,17 @@ export function Component() {
     }
   }, [showCanvas, savedDrawing]);
 
+  const getTouchPos = (canvasDom: HTMLCanvasElement, touchEvent: TouchEvent) => {
+    const rect = canvasDom.getBoundingClientRect();
+    const touch = touchEvent.touches[0];
+    const scaleX = canvasDom.width / rect.width;
+    const scaleY = canvasDom.height / rect.height;
+    return {
+      x: (touch.clientX - rect.left) * scaleX,
+      y: (touch.clientY - rect.top) * scaleY
+    };
+  };
+
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -196,6 +207,42 @@ export function Component() {
     }
   };
   
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
+    setLastPosition(pos);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
+    draw(pos);
+  };
+
+  const handleTouchEnd = () => {
+    setIsDrawing(false);
+    saveDrawing();
+  };
+
+  const draw = (currentPosition: { x: number; y: number }) => {
+    if (canvasContext) {
+      canvasContext.beginPath();
+      canvasContext.moveTo(lastPosition.x, lastPosition.y);
+      canvasContext.lineTo(currentPosition.x, currentPosition.y);
+      canvasContext.strokeStyle = "white";
+      canvasContext.lineWidth = 4;
+      canvasContext.stroke();
+      setLastPosition(currentPosition);
+    }
+  };
+
+  const saveDrawing = () => {
+    if (canvasContext && canvasRef.current) {
+      const ctx = canvasContext;
+      const drawing = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      setSavedDrawing(drawing);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-950 p-4 md:p-8">
@@ -227,6 +274,9 @@ export function Component() {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
                 />
               )}
             </div>
