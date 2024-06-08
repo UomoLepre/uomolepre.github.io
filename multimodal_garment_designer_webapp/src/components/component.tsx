@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import domtoimage from 'dom-to-image';
+import Image from 'next/image';
+
+interface Sentences {
+  [key: string]: string[];
+}
 
 export function Component() {
   // Initialize state with an empty array of textual inputs
@@ -32,27 +37,27 @@ export function Component() {
       const ctx = canvas.getContext("2d");
       setCanvasContext(ctx);
       if (savedDrawing) {
-        ctx.putImageData(savedDrawing, 0, 0);
+        ctx!.putImageData(savedDrawing, 0, 0);
       }
     }
   }, [showCanvas, savedDrawing]);
 
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
-    const rect = canvasRef.current.getBoundingClientRect();
-    const scaleX = canvasRef.current.width / rect.width;
-    const scaleY = canvasRef.current.height / rect.height;
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const scaleX = canvasRef.current!.width / rect.width;
+    const scaleY = canvasRef.current!.height / rect.height;
     setLastPosition({
       x: (e.clientX - rect.left) * scaleX,
       y: (e.clientY - rect.top) * scaleY,
     });
   };
   
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    const scaleX = canvasRef.current.width / rect.width;
-    const scaleY = canvasRef.current.height / rect.height;
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const scaleX = canvasRef.current!.width / rect.width;
+    const scaleY = canvasRef.current!.height / rect.height;
     const currentPosition = {
       x: (e.clientX - rect.left) * scaleX,
       y: (e.clientY - rect.top) * scaleY,
@@ -107,7 +112,7 @@ export function Component() {
   };
 
   // Update the function to handle Enter key press
-  const handleTextareaKeyPress = (e) => {
+  const handleTextareaKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Prevent default behavior (e.g., new line in textarea)
       handleAddTextualInputClick(); // Call the function to add the textual input
@@ -150,9 +155,9 @@ export function Component() {
           link.click();
           // Remove the link from the document body
           document.body.removeChild(link);
-  
+          
           // Create JSON object to store sentences
-          const sentences = {};
+          const sentences: Sentences = {};
   
           // Iterate over textualInputs and associate them with the selected model number
           textualInputs.forEach(sentence => {
@@ -197,15 +202,14 @@ export function Component() {
       <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="relative flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-8">
-            <div className="relative">
-              <img
-                ref={imgRef}
+            <div className="relative" ref={imgRef}>
+              <Image
                 alt="Model"
                 className={`max-w-full h-auto rounded-lg ${showCanvas ? 'faded' : ''}`} // Apply faded class conditionally
                 height={1024}
                 src={currentImage}
                 width={768}
-                onLoad={() => {
+                onLoadingComplete={() => {
                   if (canvasRef.current && imgRef.current) {
                     const canvas = canvasRef.current;
                     const img = imgRef.current;
@@ -362,7 +366,7 @@ export function Component() {
   );
 }
 
-function PencilIcon(props) {
+function PencilIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -382,7 +386,7 @@ function PencilIcon(props) {
   );
 }
 
-function PlusIcon(props) {
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -402,7 +406,7 @@ function PlusIcon(props) {
   );
 }
 
-function TrashIcon(props) {
+function TrashIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -423,7 +427,7 @@ function TrashIcon(props) {
   );
 }
 
-function XIcon(props) {
+function XIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
