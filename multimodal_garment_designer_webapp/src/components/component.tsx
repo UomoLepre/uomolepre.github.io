@@ -208,6 +208,7 @@ export function Component() {
   };
   
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    disableScroll();
     setIsDrawing(true);
     const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
     setLastPosition(pos);
@@ -215,15 +216,16 @@ export function Component() {
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
+    e.preventDefault(); // Prevent default touch behavior (scrolling)
     const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
     draw(pos);
   };
 
   const handleTouchEnd = () => {
+    enableScroll();
     setIsDrawing(false);
     saveDrawing();
   };
-
   const draw = (currentPosition: { x: number; y: number }) => {
     if (canvasContext) {
       canvasContext.beginPath();
@@ -242,6 +244,14 @@ export function Component() {
       const drawing = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
       setSavedDrawing(drawing);
     }
+  };
+
+  const disableScroll = () => {
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const enableScroll = () => {
+    document.body.style.overflow = 'auto';
   };
 
   return (
