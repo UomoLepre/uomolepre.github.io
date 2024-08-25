@@ -17,7 +17,7 @@ export function Component() {
   const [addedInput, setAddedInput] = useState<string>("");
 
   // State to manage the current image
-  const [currentImage, setCurrentImage] = useState<string>("/assets/model1.jpg");
+  const [currentImage, setCurrentImage] = useState<string>("/assets/03191_00.jpg");
 
   // State to manage the visibility of the canvas
   const [showCanvas, setShowCanvas] = useState<boolean>(false);
@@ -291,12 +291,12 @@ export function Component() {
               )}
             </div>
             <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model1.jpg")}>
+              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191_00.jpg")}>
                 <img
                   alt="Model 1"
                   className="rounded-md"
                   height={50}
-                  src="/assets/model1.jpg"
+                  src="/assets/03191_00.jpg"
                   style={{
                     aspectRatio: "40/50",
                     objectFit: "cover",
@@ -304,12 +304,12 @@ export function Component() {
                   width={40}
                 />
               </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model2.jpg")}>
+              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419_00.jpg")}>
                 <img
                   alt="Model 2"
                   className="rounded-md"
                   height={50}
-                  src="/assets/model2.jpg"
+                  src="/assets/12419_00.jpg"
                   style={{
                     aspectRatio: "40/50",
                     objectFit: "cover",
