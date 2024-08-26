@@ -17,7 +17,7 @@ export function Component() {
   const [addedInput, setAddedInput] = useState<string>("");
 
   // State to manage the current image
-  const [currentImage, setCurrentImage] = useState<string>("/assets/03191_00.jpg");
+  const [currentImage, setCurrentImage] = useState<string>("/assets/03191.jpg");
 
   // State to manage the visibility of the canvas
   const [showCanvas, setShowCanvas] = useState<boolean>(false);
@@ -155,57 +155,66 @@ export function Component() {
   const handleGenerateDesign = () => {
     if (canvasRef.current) {
       domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
-        .then(function (dataUrl) {
-          // Create a link element
-          const link = document.createElement('a');
-          link.download = 'design.jpeg'; // Set the file name
-          link.href = dataUrl; // Set the data URL as href
-          // Append the link to the document body
-          document.body.appendChild(link);
-          // Trigger a click on the link to initiate download
-          link.click();
-          // Remove the link from the document body
-          document.body.removeChild(link);
-          
+        .then(async function (dataUrl) {
+          // Convert the data URL (base64 image) to a format acceptable by the API
+          const encodedImage = dataUrl.split(',')[1]; // Extract the base64 string
+  
           // Create JSON object to store sentences
           const sentences: Sentences = {};
+          
+          // Get the model number from the current image alt attribute (e.g., "03191")
+          const modelNumber = imgRef.current?.alt || "Unknown Model";
+          
+          // Check if the model number already exists in the sentences object
+          if (!sentences[modelNumber]) {
+            sentences[modelNumber] = [...textualInputs]; // Add all inputs as an array
+          }
   
-          // Iterate over textualInputs and associate them with the selected model number
-          textualInputs.forEach(sentence => {
-            // Get the model number from the current image URL
-            const modelNumber = currentImage.substring(currentImage.lastIndexOf('/') + 1, currentImage.lastIndexOf('.'));
-            // Check if the model number already exists in the sentences object
-            if (sentences[modelNumber]) {
-              // If it exists, push the sentence to the existing array
-              sentences[modelNumber].push(sentence);
-            } else {
-              // If it doesn't exist, create a new array with the sentence
-              sentences[modelNumber] = [sentence];
+          // Prepare the JSON payload
+          const jsonData = {
+            "MODEL": sentences,
+            "image": encodedImage // Add the base64 image here
+          };
+  
+          try {
+            // Send the JSON data to the API via POST request
+            const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(jsonData),
+            });
+  
+            // Parse the response and update the latest generated design image
+            const responseData = await response.json();
+            const latestImageUrl = responseData.generated_image_url; // Assuming the response contains the URL
+  
+            // Update the "Latest Generated Design" section with the new image
+            if (latestImageUrl) {
+              const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]')  as HTMLImageElement;
+              if (latestDesignImg) {
+                latestDesignImg.src = latestImageUrl;
+              }
+
+              // Create a link element to download the image
+              const link = document.createElement('a');
+              link.href = latestImageUrl; // Set the generated image URL
+              link.download = 'generated_design.jpeg'; // Set the file name for download
+              document.body.appendChild(link);
+              link.click(); // Trigger the download
+              document.body.removeChild(link); // Remove the link after downloading
             }
-          });
-  
-          // Convert sentences object to JSON string
-          const json = JSON.stringify(sentences, null, 2);
-  
-          // Create a Blob object containing the JSON data
-          const blob = new Blob([json], { type: 'application/json' });
-  
-          // Create a link element for JSON download
-          const jsonLink = document.createElement('a');
-          jsonLink.download = 'design.json'; // Set the file name
-          jsonLink.href = URL.createObjectURL(blob); // Set the Blob object as href
-          // Append the link to the document body
-          document.body.appendChild(jsonLink);
-          // Trigger a click on the link to initiate download
-          jsonLink.click();
-          // Remove the link from the document body
-          document.body.removeChild(jsonLink);
+          } catch (error) {
+            console.error('Error generating design:', error);
+          }
         })
         .catch(function (error) {
           console.error('Error generating design:', error);
         });
     }
   };
+  
   
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     disableScroll();
@@ -291,12 +300,12 @@ export function Component() {
               )}
             </div>
             <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191_00.jpg")}>
+              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
                 <img
-                  alt="Model 1"
+                  alt="03191"
                   className="rounded-md"
                   height={50}
-                  src="/assets/03191_00.jpg"
+                  src="/assets/03191.jpg"
                   style={{
                     aspectRatio: "40/50",
                     objectFit: "cover",
@@ -304,12 +313,12 @@ export function Component() {
                   width={40}
                 />
               </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419_00.jpg")}>
+              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419.jpg")}>
                 <img
-                  alt="Model 2"
+                  alt="12419"
                   className="rounded-md"
                   height={50}
-                  src="/assets/12419_00.jpg"
+                  src="/assets/12419.jpg"
                   style={{
                     aspectRatio: "40/50",
                     objectFit: "cover",
