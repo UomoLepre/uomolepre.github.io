@@ -163,7 +163,8 @@ export function Component() {
           const sentences: Sentences = {};
           
           // Get the model number from the current image alt attribute (e.g., "03191")
-          const modelNumber = imgRef.current?.alt || "Unknown Model";
+          const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
+
           
           // Check if the model number already exists in the sentences object
           if (!sentences[modelNumber]) {
