@@ -187,31 +187,22 @@ export function Component() {
               body: JSON.stringify(jsonData),
             });
   
-            // Parse the response and update the latest generated design image
-            const responseData = await response.json();
-            const latestImageUrl = responseData.generated_image_url; // Assuming the response contains the URL
-  
-            // Update the "Latest Generated Design" section with the new image
-            if (latestImageUrl) {
-              const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]')  as HTMLImageElement;
-              if (latestDesignImg) {
-                latestDesignImg.src = latestImageUrl;
-              }
-
-              // Create a link element to download the image
-              const link = document.createElement('a');
-              link.href = latestImageUrl; // Set the generated image URL
-              link.download = 'generated_design.jpeg'; // Set the file name for download
-              document.body.appendChild(link);
-              link.click(); // Trigger the download
-              document.body.removeChild(link); // Remove the link after downloading
-            }
+              // Converti la risposta in Blob
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            // Crea un link per scaricare il file
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'generated_design.jpeg'; // Nome del file da scaricare
+            document.body.appendChild(link);
+            link.click(); // Avvia il download
+            document.body.removeChild(link); // Rimuovi il link dopo il download
           } catch (error) {
-            console.error('Error generating design:', error);
+            console.error('Errore nella generazione del design:', error);
           }
         })
         .catch(function (error) {
-          console.error('Error generating design:', error);
+          console.error('Errore nella generazione del design:', error);
         });
     }
   };
