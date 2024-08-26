@@ -186,10 +186,20 @@ export function Component() {
               },
               body: JSON.stringify(jsonData),
             });
+
+            
+
   
               // Converti la risposta in Blob
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
+
+            // Aggiorna l'immagine nella sezione "Latest Generated Design"
+            const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
+            if (latestDesignImg) {
+              latestDesignImg.src = url; // Aggiorna la sorgente dell'immagine con il Blob
+            }
+            
             // Crea un link per scaricare il file
             const link = document.createElement('a');
             link.href = url;
