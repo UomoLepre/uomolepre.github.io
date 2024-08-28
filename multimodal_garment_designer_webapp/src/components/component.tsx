@@ -3,8 +3,18 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { alertService } from "@/services/alert.service";
 import domtoimage from 'dom-to-image';
 import Image from 'next/image';
+
+// Spinner Component
+function Spinner() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
 interface Sentences {
   [key: string]: string[];
@@ -25,6 +35,8 @@ export function Component() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  //State to manage model answer loading
+  const [loading, setLoading] = useState(false);
   // State to manage drawing
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [canvasContext, setCanvasContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -154,66 +166,69 @@ export function Component() {
 
   const handleGenerateDesign = () => {
     if (canvasRef.current) {
-      domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
-        .then(async function (dataUrl) {
-          // Convert the data URL (base64 image) to a format acceptable by the API
-          const encodedImage = dataUrl.split(',')[1]; // Extract the base64 string
-  
-          // Create JSON object to store sentences
-          const sentences: Sentences = {};
-          
-          // Get the model number from the current image alt attribute (e.g., "03191")
-          const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
-
-          
-          // Check if the model number already exists in the sentences object
-          if (!sentences[modelNumber]) {
-            sentences[modelNumber] = [...textualInputs]; // Add all inputs as an array
-          }
-  
-          // Prepare the JSON payload
-          const jsonData = {
-            "MODEL": sentences,
-            "image": encodedImage // Add the base64 image here
-          };
-  
-          try {
-            // Send the JSON data to the API via POST request
-            const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(jsonData),
-            });
-
-            
-
-  
-              // Converti la risposta in Blob
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
-            // Aggiorna l'immagine nella sezione "Latest Generated Design"
-            const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
-            if (latestDesignImg) {
-              latestDesignImg.src = url; // Aggiorna la sorgente dell'immagine con il Blob
+      console.log("canvas");
+      if (textualInputs.length === 3){
+        domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
+          .then(async function (dataUrl) {
+            // Convert the data URL (base64 image) to a format acceptable by the API
+            const encodedImage = dataUrl.split(',')[1]; // Extract the base64 string
+            // Create JSON object to store sentences
+            const sentences: Sentences = {};
+            // Get the model number from the current image alt attribute (e.g., "03191")
+            const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
+            // Check if the model number already exists in the sentences object
+            if (!sentences[modelNumber]) {
+              sentences[modelNumber] = [...textualInputs]; // Add all inputs as an array
             }
-            
-            // Crea un link per scaricare il file
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'generated_design.jpeg'; // Nome del file da scaricare
-            document.body.appendChild(link);
-            link.click(); // Avvia il download
-            document.body.removeChild(link); // Rimuovi il link dopo il download
-          } catch (error) {
+    
+            // Prepare the JSON payload
+            const jsonData = {
+              "MODEL": sentences,
+              "image": encodedImage // Add the base64 image here
+            };
+    
+            try {
+              setLoading(true); // Set loading state to true
+              // Send the JSON data to the API via POST request
+              const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
+              });
+
+                // Converti la risposta in Blob
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+
+              // Aggiorna l'immagine nella sezione "Latest Generated Design"
+              const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
+              if (latestDesignImg) {
+                latestDesignImg.src = url; // Aggiorna la sorgente dell'immagine con il Blob
+              }
+              
+              // Crea un link per scaricare il file
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'generated_design.jpeg'; // Nome del file da scaricare
+              document.body.appendChild(link);
+              link.click(); // Avvia il download
+              document.body.removeChild(link); // Rimuovi il link dopo il download
+            } catch (error) {
+              console.error('Errore nella generazione del design:', error);
+            } finally {
+              setLoading(false); // Remove the spinner when the request is completed
+            }
+          })
+          .catch(function (error) {
             console.error('Errore nella generazione del design:', error);
-          }
-        })
-        .catch(function (error) {
-          console.error('Errore nella generazione del design:', error);
-        });
+          });
+      } else {
+        alertService.error('Error : Exactly three textual inputs must be inserted to generate a dress')
+      }
+    } else {
+      alertService.error('Error : Cannot generate image if no canvas has been edited')
     }
   };
   
@@ -266,6 +281,7 @@ export function Component() {
   };
 
   return (
+    
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-950 p-4 md:p-8">
       <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-2">
@@ -417,6 +433,8 @@ export function Component() {
             </div>
             <div className="balloon-container space-y-2" />
             <Button className="w-full" onClick={handleGenerateDesign}>Generate Design</Button>
+            
+            {loading && <Spinner />}
             <div className="flex items-center justify-center">
               <img
                 alt="Latest Generated Design"
