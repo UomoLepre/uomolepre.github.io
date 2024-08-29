@@ -282,10 +282,10 @@ export function Component() {
 
   return (
     
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-950 p-4 md:p-8">
-      <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-2">
-          <div className="relative flex items-center justify-center bg-gray-100 dark:bg-gray-800 p-8">
+          <div className="relative flex items-center justify-center bg-gray-100 p-8">
             <div className="relative" ref={imgRef}>
               <Image
                 alt="Model"
@@ -406,7 +406,7 @@ export function Component() {
               </div>
               <div className="balloon-container space-y-2">
                 {textualInputs.map((text, index) => (
-                  <div key={index} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 flex items-center justify-between mb-2 balloon">
+                  <div key={index} className="bg-gray-100 rounded-lg p-3 flex items-center justify-between mb-2 balloon">
                     <span>{text}</span>
                     <Button
                       className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
