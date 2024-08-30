@@ -320,7 +320,7 @@ export function Component() {
   return (
     
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 dark:bg-gray-950 p-4 md:p-8">
-      <h1 className="text-3xl font-bold" style={{textAlign : 'center', marginBottom : '10px'}}>Draw your design!</h1>
+      <h1 className="text-3xl font-bold" style={{textAlign : 'center', marginBottom : '10px', color: 'white'}}>Draw your design!</h1>
     <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
       <div className="grid md:grid-cols-2">
         <div className="relative flex items-center justify-center bg-gray-800 dark:bg-gray-800 p-8">
@@ -525,7 +525,7 @@ export function Component() {
               </div>
             </div>
             <div className="balloon-container space-y-2" />
-            <Button className="w-full" onClick={handleGenerateDesign}>Generate Design</Button>
+            <Button className="w-full" style={{backgroundColor: 'black', color: 'white'}} onClick={handleGenerateDesign}>Generate Design</Button>
             
             {loading && <Spinner />}
             <div className="flex items-center justify-center">
