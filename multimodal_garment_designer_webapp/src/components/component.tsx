@@ -22,7 +22,7 @@ interface Sentences {
 
 export function Component() {
   // Initialize state with an empty array of textual inputs
-  const [textualInputs, setTextualInput] = useState<string[]>([]);
+  const [textualInputs, setTextualInput] = useState<string[]>(["", "", ""]);
   // addedInput is the value of the textarea. The function setAddedInput is used to update the value of the textarea.
   const [addedInput, setAddedInput] = useState<string>("");
 
@@ -34,6 +34,8 @@ export function Component() {
   // Reference to the canvas and image
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   //State to manage model answer loading
   const [loading, setLoading] = useState(false);
@@ -145,11 +147,14 @@ export function Component() {
 
   // Event handler to add a new textual input
   const handleAddTextualInputClick = () => {
-    // Ensure the text is not empty
-    if (addedInput.trim()) {
-      setTextualInput([...textualInputs, addedInput]);
-      // Clear the textarea after adding
-      setAddedInput("");
+    // Trova il primo riquadro vuoto e aggiungi il testo lì
+    const firstEmptyIndex = textualInputs.findIndex(input => input === "");
+    
+    if (firstEmptyIndex !== -1 && addedInput.trim()) {
+      const newInputs = [...textualInputs];
+      newInputs[firstEmptyIndex] = addedInput;
+      setTextualInput(newInputs);
+      setAddedInput(""); // Resetta il campo di input
     }
   };
 
@@ -161,7 +166,9 @@ export function Component() {
 
   // Event handler to remove a textual input
   const handleRemoveTextualInput = (index: number) => {
-    setTextualInput(textualInputs.filter((_, i) => i !== index));
+    const newInputs = [...textualInputs];
+    newInputs[index] = ""; // Svuota il riquadro selezionato
+    setTextualInput(newInputs);
   };
 
   const handleGenerateDesign = () => {
@@ -170,26 +177,22 @@ export function Component() {
       if (textualInputs.length === 3){
         domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
           .then(async function (dataUrl) {
-            // Convert the data URL (base64 image) to a format acceptable by the API
-            const encodedImage = dataUrl.split(',')[1]; // Extract the base64 string
-            // Create JSON object to store sentences
+            const encodedImage = dataUrl.split(',')[1];
             const sentences: Sentences = {};
-            // Get the model number from the current image alt attribute (e.g., "03191")
             const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
-            // Check if the model number already exists in the sentences object
+  
             if (!sentences[modelNumber]) {
-              sentences[modelNumber] = [...textualInputs]; // Add all inputs as an array
+              sentences[modelNumber] = [...textualInputs];
             }
-    
-            // Prepare the JSON payload
+  
             const jsonData = {
               "MODEL": sentences,
-              "image": encodedImage // Add the base64 image here
+              "image": encodedImage
             };
-    
+  
             try {
-              setLoading(true); // Set loading state to true
-              // Send the JSON data to the API via POST request
+              setLoading(true);
+  
               const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
                 method: 'POST',
                 headers: {
@@ -197,28 +200,22 @@ export function Component() {
                 },
                 body: JSON.stringify(jsonData),
               });
-
-                // Converti la risposta in Blob
+  
               const blob = await response.blob();
               const url = window.URL.createObjectURL(blob);
-
-              // Aggiorna l'immagine nella sezione "Latest Generated Design"
+  
+              // Aggiorna l'URL dell'immagine generata
+              setGeneratedImageUrl(url);
+  
+              // Aggiorna l'immagine visualizzata
               const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
               if (latestDesignImg) {
-                latestDesignImg.src = url; // Aggiorna la sorgente dell'immagine con il Blob
+                latestDesignImg.src = url;
               }
-              
-              // Crea un link per scaricare il file
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = 'generated_design.jpeg'; // Nome del file da scaricare
-              document.body.appendChild(link);
-              link.click(); // Avvia il download
-              document.body.removeChild(link); // Rimuovi il link dopo il download
             } catch (error) {
               console.error('Errore nella generazione del design:', error);
             } finally {
-              setLoading(false); // Remove the spinner when the request is completed
+              setLoading(false);
             }
           })
           .catch(function (error) {
@@ -231,6 +228,7 @@ export function Component() {
       alertService.error('Error : Cannot generate image if no canvas has been edited')
     }
   };
+  
   
   
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -283,6 +281,7 @@ export function Component() {
   return (
     
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 md:p-8">
+      <h1 className="text-3xl font-bold" style={{textAlign : 'center', marginBottom : '10px'}}>Draw your design!</h1>
       <div className="max-w-4xl w-full bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="relative flex items-center justify-center bg-gray-100 p-8">
@@ -386,8 +385,8 @@ export function Component() {
             </div>
           </div>
           <div className="p-8 space-y-6">
-            <h1 className="text-3xl font-bold">Draw your design!</h1>
-            <div className="space-y-4">
+            
+            <div className="space-y-4 flex flex-col">
               <div>
                 <div className="relative">
                 <Textarea
@@ -395,33 +394,54 @@ export function Component() {
                   id="text"
                   value={addedInput}
                   onChange={(e) => setAddedInput(e.target.value)}
-                  onKeyPress={handleTextareaKeyPress} // Add this line to handle Enter key press
+                  onKeyPress={handleTextareaKeyPress}
                   placeholder="Describe fabric, color, or distinct characteristics..."
                   rows={3}
                 />
-                  <Button className="absolute top-1/2 -translate-y-1/2 right-3" size="icon" variant="outline" onClick={handleAddTextualInputClick}>
-                    <PlusIcon className="w-5 h-5" />
-                  </Button>
+                <Button
+                  className="absolute top-1/2 -translate-y-1/2 right-3"
+                  size="icon"
+                  variant="outline"
+                  onClick={handleAddTextualInputClick}
+                >
+                  <PlusIcon className="w-5 h-5" />
+                </Button>
                 </div>
               </div>
-              <div className="balloon-container space-y-2">
-                {textualInputs.map((text, index) => (
-                  <div key={index} className="bg-gray-100 rounded-lg p-3 flex items-center justify-between mb-2 balloon">
-                    <span>{text}</span>
-                    <Button
-                      className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                      size="icon"
-                      variant="outline"
-                      onClick={() => handleRemoveTextualInput(index)}
+              <div className="balloon-container space-y-2 flex flex-col">
+                  {textualInputs.length === 0 && (
+                    <div className="text-center text-gray-500">No phrases available</div>
+                  )}
+                  {textualInputs.map((text, index) => (
+                    <div
+                      key={index}
+                      className={`bg-gray-100 rounded-lg p-3 flex items-center justify-between mb-2 balloon ${text ? '' : 'placeholder'}`}
+                      style={{ height: '50px', width: 'auto' }} // Puoi regolare l'altezza se necessario
                     >
-                      <XIcon className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      {text && (
+                        <span>{text}</span>
+                      )}
+                      {text && (
+                        <Button
+                          className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleRemoveTextualInput(index)}
+                        >
+                          <XIcon className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {loading && <Spinner />}
+
+
+
               <div>
-                <Label>Draw on the Model</Label>
-                <div className="flex items-center justify-center">
+                <Label style={{textAlign: 'center', display: 'block'}} >Draw on the Model</Label>
+                <div className="flex items-center justify-center" style={{marginTop: '10px'}}>
                   <Button className="mr-2" size="icon" variant="outline" onClick={handleToggleCanvas}>
                     <PencilIcon className="w-5 h-5" />
                   </Button>
@@ -448,6 +468,14 @@ export function Component() {
                 width={300}
               />
             </div>
+            {generatedImageUrl && (
+              <a
+              href={generatedImageUrl}
+              download="generated_design.jpeg"
+              className="mt-4 w-full inline-block text-center bg-blue-500 text-white font-bold py-2 px-4 rounded">
+              Download Design
+            </a>
+          )}
           </div>
         </div>
       </div>
