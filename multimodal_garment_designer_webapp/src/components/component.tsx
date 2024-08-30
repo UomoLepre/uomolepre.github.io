@@ -43,6 +43,9 @@ export function Component() {
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
   const [savedDrawing, setSavedDrawing] = useState<ImageData | null>(null);
 
+  // New state for stroke size
+  const [strokeSize, setStrokeSize] = useState<number>(5);
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -63,46 +66,6 @@ export function Component() {
       x: (touch.clientX - rect.left) * scaleX,
       y: (touch.clientY - rect.top) * scaleY
     };
-  };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    const rect = canvasRef.current!.getBoundingClientRect();
-    const scaleX = canvasRef.current!.width / rect.width;
-    const scaleY = canvasRef.current!.height / rect.height;
-    setLastPosition({
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    });
-  };
-  
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    const rect = canvasRef.current!.getBoundingClientRect();
-    const scaleX = canvasRef.current!.width / rect.width;
-    const scaleY = canvasRef.current!.height / rect.height;
-    const currentPosition = {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    };
-    if (canvasContext) {
-      canvasContext.beginPath();
-      canvasContext.moveTo(lastPosition.x, lastPosition.y);
-      canvasContext.lineTo(currentPosition.x, currentPosition.y);
-      canvasContext.strokeStyle = "white";
-      canvasContext.lineWidth = 4;
-      canvasContext.stroke();
-      setLastPosition(currentPosition);
-    }
-  };
-  
-  const handleMouseUp = () => {
-    setIsDrawing(false);
-    if (canvasContext && canvasRef.current) {
-      const ctx = canvasContext;
-      const drawing = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
-      setSavedDrawing(drawing);
-    }
   };
 
   const handleToggleCanvas = () => {
@@ -231,6 +194,48 @@ export function Component() {
       alertService.error('Error : Cannot generate image if no canvas has been edited')
     }
   };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const scaleX = canvasRef.current!.width / rect.width;
+    const scaleY = canvasRef.current!.height / rect.height;
+
+    drawPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY )
+    setLastPosition({
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    });
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const scaleX = canvasRef.current!.width / rect.width;
+    const scaleY = canvasRef.current!.height / rect.height;
+    const currentPosition = {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
+    if (canvasContext) {
+      canvasContext.beginPath();
+      canvasContext.moveTo(lastPosition.x, lastPosition.y);
+      canvasContext.lineTo(currentPosition.x, currentPosition.y);
+      canvasContext.strokeStyle = "white";
+      canvasContext.lineWidth = strokeSize;
+      canvasContext.stroke();
+      setLastPosition(currentPosition);
+    }
+  };
+  
+  const handleMouseUp = () => {
+    setIsDrawing(false);
+    if (canvasContext && canvasRef.current) {
+      const ctx = canvasContext;
+      const drawing = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      setSavedDrawing(drawing);
+    }
+  };
   
   
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -252,13 +257,27 @@ export function Component() {
     setIsDrawing(false);
     saveDrawing();
   };
+
+  const drawPoint = (x:number, y:number) => {
+    
+    if (canvasContext){
+      canvasContext.lineWidth = strokeSize;  // Set stroke size dynamically
+      canvasContext.strokeStyle = "white";
+      //canvasContext.beginPath();
+      canvasContext.moveTo(x, y);
+      canvasContext.lineTo(x+1, y+1);
+      console.log("oh");
+      canvasContext.stroke();
+    }
+  };
+
   const draw = (currentPosition: { x: number; y: number }) => {
     if (canvasContext) {
       canvasContext.beginPath();
       canvasContext.moveTo(lastPosition.x, lastPosition.y);
       canvasContext.lineTo(currentPosition.x, currentPosition.y);
       canvasContext.strokeStyle = "white";
-      canvasContext.lineWidth = 4;
+      canvasContext.lineWidth = strokeSize;
       canvasContext.stroke();
       setLastPosition(currentPosition);
     }
@@ -317,74 +336,93 @@ export function Component() {
                 />
               )}
             </div>
-            <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
-                <img
-                  alt="03191"
-                  className="rounded-md"
-                  height={50}
-                  src="/assets/03191.jpg"
-                  style={{
-                    aspectRatio: "40/50",
-                    objectFit: "cover",
-                  }}
-                  width={40}
-                />
-              </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419.jpg")}>
-                <img
-                  alt="12419"
-                  className="rounded-md"
-                  height={50}
-                  src="/assets/12419.jpg"
-                  style={{
-                    aspectRatio: "40/50",
-                    objectFit: "cover",
-                  }}
-                  width={40}
-                />
-              </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model3.jpg")}>
-                <img
-                  alt="Model 3"
-                  className="rounded-md"
-                  height={50}
-                  src="/assets/model3.jpg"
-                  style={{
-                    aspectRatio: "40/50",
-                    objectFit: "cover",
-                  }}
-                  width={40}
-                />
-              </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model4.jpg")}>
-                <img
-                  alt="Model 4"
-                  className="rounded-md"
-                  height={50}
-                  src="/assets/model4.jpg"
-                  style={{
-                    aspectRatio: "40/50",
-                    objectFit: "cover",
-                  }}
-                  width={40}
-                />
-              </Button>
-              <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model5.jpg")}>
-                <img
-                  alt="Model 5"
-                  className="rounded-md"
-                  height={50}
-                  src="/assets/model5.jpg"
-                  style={{
-                    aspectRatio: "40/50",
-                    objectFit: "cover",
-                  }}
-                  width={40}
-                />
-              </Button>
+            
+            {showCanvas && (
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+              <Label htmlFor="strokeSize" className="text-white">Stroke Size: {strokeSize}px</Label>
+              <input
+                type="range"
+                id="strokeSize"
+                min="1"
+                max="20"
+                value={strokeSize}
+                onChange={(e) => setStrokeSize(Number(e.target.value))}
+                className="w-40"
+              />
+            </div>
+            )}
+
+            <div>
+              <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
+                  <img
+                    alt="03191"
+                    className="rounded-md"
+                    height={50}
+                    src="/assets/03191.jpg"
+                    style={{
+                      aspectRatio: "40/50",
+                      objectFit: "cover",
+                    }}
+                    width={40}
+                  />
+                </Button>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419.jpg")}>
+                  <img
+                    alt="12419"
+                    className="rounded-md"
+                    height={50}
+                    src="/assets/12419.jpg"
+                    style={{
+                      aspectRatio: "40/50",
+                      objectFit: "cover",
+                    }}
+                    width={40}
+                  />
+                </Button>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model3.jpg")}>
+                  <img
+                    alt="Model 3"
+                    className="rounded-md"
+                    height={50}
+                    src="/assets/model3.jpg"
+                    style={{
+                      aspectRatio: "40/50",
+                      objectFit: "cover",
+                    }}
+                    width={40}
+                  />
+                </Button>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model4.jpg")}>
+                  <img
+                    alt="Model 4"
+                    className="rounded-md"
+                    height={50}
+                    src="/assets/model4.jpg"
+                    style={{
+                      aspectRatio: "40/50",
+                      objectFit: "cover",
+                    }}
+                    width={40}
+                  />
+                </Button>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model5.jpg")}>
+                  <img
+                    alt="Model 5"
+                    className="rounded-md"
+                    height={50}
+                    src="/assets/model5.jpg"
+                    style={{
+                      aspectRatio: "40/50",
+                      objectFit: "cover",
+                    }}
+                    width={40}
+                  />
+                </Button>
+              </div>
             </div>
           </div>
+          
           <div className="p-8 space-y-6">
             <h1 className="text-3xl font-bold">Draw your design!</h1>
             <div className="space-y-4">
@@ -406,7 +444,7 @@ export function Component() {
               </div>
               <div className="balloon-container space-y-2">
                 {textualInputs.map((text, index) => (
-                  <div key={index} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 flex items-center justify-between mb-2 balloon">
+                  <div key={index} className="bg-gray-100 dark:bg-gray-100 rounded-lg p-3 flex items-center justify-between mb-2 balloon">
                     <span>{text}</span>
                     <Button
                       className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
