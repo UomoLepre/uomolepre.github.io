@@ -45,6 +45,11 @@ export function Component() {
 
   // New state for stroke size
   const [strokeSize, setStrokeSize] = useState<number>(5);
+  const [isErasing, setIsErasing] = useState(false);
+
+  const toggleEraser = () => {
+     setIsErasing(!isErasing); 
+  };
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -196,16 +201,24 @@ export function Component() {
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    const rect = canvasRef.current!.getBoundingClientRect();
-    const scaleX = canvasRef.current!.width / rect.width;
-    const scaleY = canvasRef.current!.height / rect.height;
+    if(canvasContext){
+      setIsDrawing(true);
+      const rect = canvasRef.current!.getBoundingClientRect();
+      const scaleX = canvasRef.current!.width / rect.width;
+      const scaleY = canvasRef.current!.height / rect.height;
 
-    drawPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY )
-    setLastPosition({
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    });
+      if (isErasing) {
+        canvasContext.globalCompositeOperation = 'destination-out'; // Attiva modalità gomma
+      } else {
+        canvasContext.globalCompositeOperation = 'source-over'; // Modalità normale per disegno
+      }
+
+      drawPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY )
+      setLastPosition({
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+      });
+  }
   };
   
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -239,10 +252,18 @@ export function Component() {
   
   
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    disableScroll();
-    setIsDrawing(true);
-    const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
-    setLastPosition(pos);
+    if(canvasContext){
+      disableScroll();
+      setIsDrawing(true);
+      if (isErasing) {
+        canvasContext.globalCompositeOperation = 'destination-out'; // Attiva modalità gomma
+      } else {
+        canvasContext.globalCompositeOperation = 'source-over'; // Modalità normale per disegno
+      }
+      const pos = getTouchPos(canvasRef.current!, e.nativeEvent);
+      setLastPosition(pos);
+    }
+    
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -338,17 +359,32 @@ export function Component() {
             </div>
             
             {showCanvas && (
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-              <Label htmlFor="strokeSize" className="text-white">Stroke Size: {strokeSize}px</Label>
-              <input
-                type="range"
-                id="strokeSize"
-                min="1"
-                max="20"
-                value={strokeSize}
-                onChange={(e) => setStrokeSize(Number(e.target.value))}
-                className="w-40"
-              />
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-row items-center">
+              <div>
+                <Label htmlFor="strokeSize" className="text-white">Stroke Size: {strokeSize}px</Label>
+                <input
+                  type="range"
+                  id="strokeSize"
+                  min="1"
+                  max="20"
+                  value={strokeSize}
+                  onChange={(e) => setStrokeSize(Number(e.target.value))}
+                  className="w-40"
+                />
+              </div>
+              <div>
+                <button 
+                  onClick={toggleEraser} 
+                  style={{ 
+                      margin: '20%',
+                      cursor: 'pointer',
+                      border: isErasing ? '2px solid white' : 'none',
+                      backgroundColor: isErasing ? '#8f9296' : 'transparent',
+                      padding: '5px', 
+                  }}>
+                  <img src="/assets/icons/eraser.png" alt="buttonpng"  />
+                </button>
+              </div>
             </div>
             )}
 
