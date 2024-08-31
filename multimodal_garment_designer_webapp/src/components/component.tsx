@@ -320,7 +320,7 @@ export function Component() {
   return (
     
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 dark:bg-gray-950 p-4 md:p-8">
-      <h1 className="text-3xl font-bold" style={{textAlign : 'center', marginBottom : '10px', color: 'white'}}>Draw your design!</h1>
+      
     <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
       <div className="grid md:grid-cols-2">
         <div className="relative flex items-center justify-center bg-gray-800 dark:bg-gray-800 p-8">
@@ -457,8 +457,8 @@ export function Component() {
             </div>
           </div>
           
-          <div className="p-8 space-y-6">
-            
+          <div className="p-8 space-y-6" style={{backgroundColor: '#111827'}}>
+          <h1 className="text-3xl font-bold" style={{color: 'white'}}>Draw your design!</h1>
             <div className="space-y-4 flex flex-col">
               <div>
                 <div className="relative">
@@ -482,18 +482,24 @@ export function Component() {
                 </div>
               </div>
               <div className="balloon-container space-y-2 flex flex-col">
-                  {textualInputs.length === 0 && (
-                    <div className="text-center text-gray-500">No phrases available</div>
-                  )}
-                  {textualInputs.map((text, index) => (
+                {textualInputs.map((text, index) => {
+                  
+                  const placeholders = [
+                    "Color red",
+                    "Long sleeves shirt",
+                    "Single color"
+                  ];
+
+                  return (
                     <div
                       key={index}
-                      className={`bg-gray-100 dark:bg-gray-100 rounded-lg p-3 flex items-center justify-between mb-2 balloon ${text ? '' : 'placeholder'}`}
-                      style={{ height: '50px', width: 'auto' }} // Puoi regolare l'altezza se necessario
+                      className="rounded-lg p-3 flex items-center justify-between mb-2"
+                      style={{
+                        height: '50px',
+                        backgroundColor: 'white',
+                      }}
                     >
-                      {text && (
-                        <span>{text}</span>
-                      )}
+                      <span>{text || placeholders[index % placeholders.length]}</span>
                       {text && (
                         <Button
                           className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
@@ -505,15 +511,17 @@ export function Component() {
                         </Button>
                       )}
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
+              </div>
+
 
                 {loading && <Spinner />}
 
 
 
               <div>
-                <Label style={{textAlign: 'center', display: 'block'}} >Draw on the Model</Label>
+                <Label style={{textAlign: 'center', display: 'block', color: 'white'}} >Draw on the Model</Label>
                 <div className="flex items-center justify-center" style={{marginTop: '10px'}}>
                   <Button className="mr-2" size="icon" variant="outline" onClick={handleToggleCanvas}>
                     <PencilIcon className="w-5 h-5" />
@@ -525,7 +533,20 @@ export function Component() {
               </div>
             </div>
             <div className="balloon-container space-y-2" />
-            <Button className="w-full" style={{backgroundColor: 'black', color: 'white'}} onClick={handleGenerateDesign}>Generate Design</Button>
+            <Button className="w-full"   style={{
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                    width: '100%',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'blue';
+                                    e.currentTarget.style.color = 'white';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'black';
+                                    e.currentTarget.style.color = 'white';
+                                  }} onClick={handleGenerateDesign}>
+               Generate Design</Button>
             
             {loading && <Spinner />}
             <div className="flex items-center justify-center">
@@ -545,7 +566,18 @@ export function Component() {
               <a
               href={generatedImageUrl}
               download="generated_design.jpeg"
-              className="mt-4 w-full inline-block text-center bg-blue-500 text-white font-bold py-2 px-4 rounded">
+              className="mt-4 w-full inline-block text-center bg-blue-500 text-white font-bold py-2 px-4 rounded"
+              style={{
+                backgroundColor: 'blue', 
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'blue';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'black';
+                e.currentTarget.style.color = 'white';
+              }}>
               Download Design
             </a>
           )}
