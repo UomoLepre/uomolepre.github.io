@@ -462,28 +462,48 @@ export function Component() {
             <div className="space-y-4 flex flex-col">
               <div>
                 <div className="relative">
-                <Textarea
-                  className="w-full pr-12"
-                  id="text"
-                  value={addedInput}
-                  onChange={(e) => setAddedInput(e.target.value)}
-                  onKeyPress={handleTextareaKeyPress}
-                  placeholder="Describe fabric, color, or distinct characteristics..."
-                  rows={3}
-                />
-                <Button
+                {textualInputs.filter(item => item !== "").length < 3 && (
+                  <div>   
+                  <Textarea
+                    className="w-full pr-12 notresizable"
+                    id="text"
+                    value={addedInput}
+                    onChange={(e) => setAddedInput(e.target.value)}
+                    onKeyPress={handleTextareaKeyPress}
+                    placeholder="Describe fabric, color, or distinct characteristics..."
+                    rows={3}
+                  />
+                  
+                  <Button
                   className="absolute top-1/2 -translate-y-1/2 right-3"
                   size="icon"
                   variant="outline"
                   onClick={handleAddTextualInputClick}
                 >
-                  <PlusIcon className="w-5 h-5" />
+                <PlusIcon className="w-5 h-5" />
                 </Button>
                 </div>
+                )}
+                {textualInputs.filter(item => item !== "").length >= 3 && (
+                  <div>   
+                  <Textarea
+                    className="w-full pr-12 notresizable"
+                    id="text"
+                    value={addedInput}
+                    onChange={(e) => setAddedInput(e.target.value)}
+                    onKeyPress={handleTextareaKeyPress}
+                    placeholder="You have reached the text input limit. Delete one to add another"
+                    rows={3}
+                    disabled
+                  />
+                </div>
+                )}
+                
+              </div>
               </div>
               <div className="balloon-container space-y-2 flex flex-col">
                 {textualInputs.map((text, index) => {
-                  
+
                   const placeholders = [
                     "Color red",
                     "Long sleeves shirt",
