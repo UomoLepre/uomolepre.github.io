@@ -351,7 +351,7 @@ export function Component() {
     <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
       <div className="grid md:grid-cols-2">
         <div className="relative flex items-center justify-center bg-gray-800 dark:bg-gray-800 p-8">
-            <div className="relative" ref={imgRef}>
+            <div className="relative" ref={imgRef} style={{marginBottom: '70%'}}>
               <Image
                 alt="Model"
                 className={`max-w-full h-auto rounded-lg ${showCanvas ? 'faded' : ''}`} // Apply faded class conditionally
@@ -384,7 +384,7 @@ export function Component() {
             </div>
             
             {showCanvas && (
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-row items-center">
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-row items-center" style={{marginBottom: '50%'}}>
               <div>
                 <Label htmlFor="strokeSize" className="text-white">Stroke Size: {strokeSize}px</Label>
                 <input
@@ -398,6 +398,7 @@ export function Component() {
                 />
               </div>
               <div>
+                
                 <button 
                   onClick={toggleEraser} 
                   style={{ 
@@ -414,7 +415,7 @@ export function Component() {
             )}
 
             <div>
-              <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              <div className="absolute bottom-4 right-9 flex items-center gap-2" style={{marginBottom: '50%'}}>
                 <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
                   <img
                     alt="03191"
@@ -536,7 +537,7 @@ export function Component() {
       "Single color"
     ];
 
-    // Determina se usare il placeholder o il testo inserito dall'utente
+    
     const displayText = text || placeholders[index % placeholders.length];
 
     return (
@@ -546,6 +547,7 @@ export function Component() {
         style={{
           height: '50px',
           backgroundColor: text ? 'white' : '#e0e0e0',
+          opacity: text ? '1' : '0.5',
         }}
       >
         <span style={{ fontStyle: text ? 'normal' : 'italic' }}>
