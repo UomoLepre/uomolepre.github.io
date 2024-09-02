@@ -502,38 +502,43 @@ export function Component() {
               </div>
               </div>
               <div className="balloon-container space-y-2 flex flex-col">
-                {textualInputs.map((text, index) => {
+  {textualInputs.map((text, index) => {
+    const placeholders = [
+      "Color red",
+      "Long sleeves shirt",
+      "Single color"
+    ];
 
-                  const placeholders = [
-                    "Color red",
-                    "Long sleeves shirt",
-                    "Single color"
-                  ];
+    // Determina se usare il placeholder o il testo inserito dall'utente
+    const displayText = text || placeholders[index % placeholders.length];
 
-                  return (
-                    <div
-                      key={index}
-                      className="rounded-lg p-3 flex items-center justify-between mb-2"
-                      style={{
-                        height: '50px',
-                        backgroundColor: 'white',
-                      }}
-                    >
-                      <span>{text || placeholders[index % placeholders.length]}</span>
-                      {text && (
-                        <Button
-                          className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                          size="icon"
-                          variant="outline"
-                          onClick={() => handleRemoveTextualInput(index)}
-                        >
-                          <XIcon className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+    return (
+      <div
+        key={index}
+        className="rounded-lg p-3 flex items-center justify-between mb-2"
+        style={{
+          height: '50px',
+          backgroundColor: text ? 'white' : '#e0e0e0',
+        }}
+      >
+        <span style={{ fontStyle: text ? 'normal' : 'italic' }}>
+          {displayText}
+        </span>
+        {text && (
+          <Button
+            className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+            size="icon"
+            variant="outline"
+            onClick={() => handleRemoveTextualInput(index)}
+          >
+            <XIcon className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+    );
+  })}
+</div>
+
 
 
                 {loading && <Spinner />}
