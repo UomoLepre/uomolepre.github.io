@@ -153,10 +153,37 @@ export function Component() {
               sentences[modelNumber] = [...textualInputs];
             }
   
-            const jsonData = {
-              "vitonhd": sentences,
-              "image": encodedImage
-            };
+            let jsonData;
+
+            if (modelNumber === '03191' || modelNumber === '12419') {
+              jsonData = {
+                "vitonhd": sentences,
+                "image": encodedImage
+              };
+            } else if (modelNumber === '048462') {
+              jsonData = {
+                "dresscode": sentences,
+                "image": encodedImage,
+                "body_part": "upper_body"
+              };
+            } else if (modelNumber === '050915') {
+              jsonData = {
+                "dresscode": sentences,
+                "image": encodedImage,
+                "body_part": "lower_body"
+              };
+            } else if (modelNumber === '052012') {
+              jsonData = {
+                "dresscode": sentences,
+                "image": encodedImage,
+                "body_part": "dresses"
+              };
+            } else {
+              console.error('Model number not recognized:', modelNumber);
+              alertService.error('Error : Unrecognized model number');
+              setLoading(false);
+              return;
+            }
   
             try {
               setLoading(true);
@@ -414,12 +441,12 @@ export function Component() {
                     width={40}
                   />
                 </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model3.jpg")}>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/048462.jpg")}>
                   <img
-                    alt="Model 3"
+                    alt="048462"
                     className="rounded-md"
                     height={50}
-                    src="/assets/model3.jpg"
+                    src="/assets/048462.jpg"
                     style={{
                       aspectRatio: "40/50",
                       objectFit: "cover",
@@ -427,12 +454,12 @@ export function Component() {
                     width={40}
                   />
                 </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model4.jpg")}>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/050915.jpg")}>
                   <img
-                    alt="Model 4"
+                    alt="050915"
                     className="rounded-md"
                     height={50}
-                    src="/assets/model4.jpg"
+                    src="/assets/050915.jpg"
                     style={{
                       aspectRatio: "40/50",
                       objectFit: "cover",
@@ -440,12 +467,12 @@ export function Component() {
                     width={40}
                   />
                 </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/model5.jpg")}>
+                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/052012.jpg")}>
                   <img
-                    alt="Model 5"
+                    alt="052012"
                     className="rounded-md"
                     height={50}
-                    src="/assets/model5.jpg"
+                    src="/assets/052012.jpg"
                     style={{
                       aspectRatio: "40/50",
                       objectFit: "cover",
