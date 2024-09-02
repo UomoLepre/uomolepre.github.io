@@ -154,7 +154,7 @@ export function Component() {
             }
   
             const jsonData = {
-              "MODEL": sentences,
+              "vitonhd": sentences,
               "image": encodedImage
             };
   
