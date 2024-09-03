@@ -11,7 +11,7 @@ import Image from 'next/image';
 function Spinner() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center z-50">
-      <span class="loader"></span>
+      <span className="loader"></span>
       <p className="mt-8 text-white text-lg font-bold text-center p-2 rounded">Stiamo cucendo pixel su misura... Il tuo capo è quasi pronto!</p>
     {/*<div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>*/}
     </div>
