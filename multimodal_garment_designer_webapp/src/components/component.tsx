@@ -10,8 +10,10 @@ import Image from 'next/image';
 // Spinner Component
 function Spinner() {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-50">
+      <span class="loader"></span>
+      <p className="mt-8 text-white text-lg font-bold text-center p-2 rounded">Stiamo cucendo pixel su misura... Il tuo capo è quasi pronto!</p>
+    {/*<div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>*/}
     </div>
   );
 }
@@ -130,7 +132,8 @@ export function Component() {
   const handleImageChange = (newImage: string) => {
     setCurrentImage(newImage);
     setShowCanvas(false); // Hide canvas when image changes
-  };
+    clearCanvas()
+  }
 
   // Event handler to remove a textual input
   const handleRemoveTextualInput = (index: number) => {
@@ -372,13 +375,16 @@ export function Component() {
                 ref={canvasRef}
                 id="design-canvas"
                 className={`absolute top-0 left-0 w-full h-full rounded-lg ${!showCanvas ? 'fade-out' : ''}`}
-                style={{ display: showCanvas ? 'block' : 'none' }}
+                style={{ display: showCanvas ? 'block' : 'none', touchAction: 'none' }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
+                //onTouchStart={handleTouchStart}
+                //onTouchMove={handleTouchMove}
+                //onTouchEnd={handleTouchEnd}
+                onPointerDown={handleMouseDown}
+                onPointerUp={handleMouseUp}
+                onPointerMove={handleMouseMove}
                 />
               )}
             </div>
@@ -567,13 +573,6 @@ export function Component() {
     );
   })}
 </div>
-
-
-
-                {loading && <Spinner />}
-
-
-
               <div>
                 <Label style={{textAlign: 'center', display: 'block', color: 'white'}} >Draw on the Model</Label>
                 <div className="flex items-center justify-center" style={{marginTop: '10px'}}>
@@ -602,7 +601,12 @@ export function Component() {
                                   }} onClick={handleGenerateDesign}>
                Generate Design</Button>
             
-            {loading && <Spinner />}
+            {/*loading && <Spinner />*/}
+            {loading && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <Spinner />
+              </div>
+            )}
             <div className="flex items-center justify-center">
               <img
                 alt="Latest Generated Design"
