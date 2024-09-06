@@ -145,7 +145,7 @@ export function Component() {
   const handleGenerateDesign = () => {
     if (canvasRef.current) {
       console.log("canvas");
-      if (textualInputs.length === 3){
+      if (textualInputs[0] !== '' && textualInputs[1] != '' && textualInputs[2] != ''){
         domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
           .then(async function (dataUrl) {
             const encodedImage = dataUrl.split(',')[1];
