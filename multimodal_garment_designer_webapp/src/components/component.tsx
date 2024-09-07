@@ -47,6 +47,15 @@ export function Component() {
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
   const [savedDrawing, setSavedDrawing] = useState<ImageData | null>(null);
 
+  // Senteces for each model
+  const imageSentences: { [key: string]: string } = {
+    "/assets/03191.jpg": "Britney is ready for a stylish top. Choose from t-shirts, blouses, or jackets",
+    "/assets/12419.jpg": "Serena\'s look needs a new shirt. Design a fashionable top for her outfit.",
+    "/assets/048462.jpg": "Jessica is all set for a new top. Create something unique like a blouse or sweater.",
+    "/assets/050915.jpg": "Adrian is in search of the perfect pair of pants. Design trousers or jeans for his look.",
+    "/assets/052012.jpg": "Claudia\'s entire outfit is up for grabs. Dress her in a new full ensemble from head to toe."
+  };
+
   // New state for stroke size
   const [strokeSize, setStrokeSize] = useState<number>(5);
   const [isErasing, setIsErasing] = useState(false);
@@ -128,9 +137,13 @@ export function Component() {
     }
   };
 
+  // Stato per gestire la frase corrente
+  const [currentSentence, setCurrentSentence] = useState<string>(imageSentences[currentImage]);
+
   // Event handler to change the current image
   const handleImageChange = (newImage: string) => {
     setCurrentImage(newImage);
+    setCurrentSentence(imageSentences[newImage] || "");
     setShowCanvas(false); // Hide canvas when image changes
     clearCanvas()
   }
