@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { alertService } from "@/services/alert.service";
-import domtoimage from 'dom-to-image';
+import domtoimage from 'dom-to-image-more';
 import Image from 'next/image';
 
 // Spinner Component
