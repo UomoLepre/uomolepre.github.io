@@ -48,12 +48,12 @@ export function Component() {
   const [savedDrawing, setSavedDrawing] = useState<ImageData | null>(null);
 
   // Senteces for each model
-  const imageSentences: { [key: string]: string } = {
+  const imageSentences: { [key: string]: React.ReactNode } = {
     "/assets/03191.jpg": <span>Britney is ready for a stylish top. Choose from <b>t-shirts</b>, <b>blouses</b>, or <b>jackets</b></span>,
-    "/assets/12419.jpg": <span>Serena's look needs a new <b>shirt</b>. Design a fashionable <b>top</b> for her outfit.</span>,
+    "/assets/12419.jpg": <span>Serena s look needs a new <b>shirt</b>. Design a fashionable <b>top</b> for her outfit.</span>,
     "/assets/048462.jpg": <span>Jessica is all set for a new <b>top</b>. Create something unique like a <b>blouse</b> or <b>sweater</b>.</span>,
     "/assets/050915.jpg": <span>Adrian is in search of the perfect pair of <b>pants</b>. Design <b>trousers</b> or <b>jeans</b> for his look.</span>,
-    "/assets/052012.jpg": <span>Claudia's entire outfit is up for <b>grabs</b>. Dress her in a new full <b>ensemble</b> from head to toe.</span>
+    "/assets/052012.jpg": <span>Claudia s entire outfit is up for <b>grabs</b>. Dress her in a new full <b>ensemble</b> from head to toe.</span>
   };
 
   // New state for stroke size
@@ -138,7 +138,7 @@ export function Component() {
   };
 
   // Stato per gestire la frase corrente
-  const [currentSentence, setCurrentSentence] = useState<string>(imageSentences[currentImage]);
+  const [currentSentence, setCurrentSentence] = useState<React.ReactNode>(imageSentences[currentImage]);
 
   // Event handler to change the current image
   const handleImageChange = (newImage: string) => {
