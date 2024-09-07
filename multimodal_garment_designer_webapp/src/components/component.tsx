@@ -49,11 +49,11 @@ export function Component() {
 
   // Senteces for each model
   const imageSentences: { [key: string]: string } = {
-    "/assets/03191.jpg": "Britney is ready for a stylish top. Choose from t-shirts, blouses, or jackets",
-    "/assets/12419.jpg": "Serena\'s look needs a new shirt. Design a fashionable top for her outfit.",
-    "/assets/048462.jpg": "Jessica is all set for a new top. Create something unique like a blouse or sweater.",
-    "/assets/050915.jpg": "Adrian is in search of the perfect pair of pants. Design trousers or jeans for his look.",
-    "/assets/052012.jpg": "Claudia\'s entire outfit is up for grabs. Dress her in a new full ensemble from head to toe."
+    "/assets/03191.jpg": <span>Britney is ready for a stylish top. Choose from <b>t-shirts</b>, <b>blouses</b>, or <b>jackets</b></span>,
+    "/assets/12419.jpg": <span>Serena's look needs a new <b>shirt</b>. Design a fashionable <b>top</b> for her outfit.</span>,
+    "/assets/048462.jpg": <span>Jessica is all set for a new <b>top</b>. Create something unique like a <b>blouse</b> or <b>sweater</b>.</span>,
+    "/assets/050915.jpg": <span>Adrian is in search of the perfect pair of <b>pants</b>. Design <b>trousers</b> or <b>jeans</b> for his look.</span>,
+    "/assets/052012.jpg": <span>Claudia's entire outfit is up for <b>grabs</b>. Dress her in a new full <b>ensemble</b> from head to toe.</span>
   };
 
   // New state for stroke size
@@ -362,12 +362,15 @@ export function Component() {
 
   return (
     
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 dark:bg-gray-950 p-4 md:p-8">
-      
-    <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
-      <div className="grid md:grid-cols-2">
-        <div className="relative flex items-center justify-center bg-gray-800 dark:bg-gray-800 p-8">
-            <div className="relative" ref={imgRef} style={{marginBottom: '70%'}}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 dark:bg-gray-950 p-4 md:p-8">  
+      <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
+        <div className="grid md:grid-cols-2">
+          <div className="relative flex flex-col items-center bg-gray-800 dark:bg-gray-800 p-8">
+            {/* Testo sopra l'immagine */}
+            <div className="flex flex-row justify-center items-center mb-4  text-white text-lg">
+              {currentSentence}
+            </div>
+            <div className="relative h-auto w-full" ref={imgRef}>
               <Image
                 alt="Model"
                 className={`max-w-full h-auto rounded-lg ${showCanvas ? 'faded' : ''}`} // Apply faded class conditionally
@@ -385,124 +388,125 @@ export function Component() {
               />
               {showCanvas && (
                 <canvas
-                ref={canvasRef}
-                id="design-canvas"
-                className={`absolute top-0 left-0 w-full h-full rounded-lg ${!showCanvas ? 'fade-out' : ''}`}
-                style={{ display: showCanvas ? 'block' : 'none', touchAction: 'none' }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                //onTouchStart={handleTouchStart}
-                //onTouchMove={handleTouchMove}
-                //onTouchEnd={handleTouchEnd}
-                onPointerDown={handleMouseDown}
-                onPointerUp={handleMouseUp}
-                onPointerMove={handleMouseMove}
+                  ref={canvasRef}
+                  id="design-canvas"
+                  className={`absolute top-0 left-0 w-full h-full rounded-lg ${!showCanvas ? 'fade-out' : ''}`}
+                  style={{ display: showCanvas ? 'block' : 'none', touchAction: 'none' }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onPointerDown={handleMouseDown}
+                  onPointerUp={handleMouseUp}
+                  onPointerMove={handleMouseMove}
                 />
               )}
-            </div>
-            
-            {showCanvas && (
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex flex-row items-center" style={{marginBottom: '50%'}}>
-              <div>
-                <Label htmlFor="strokeSize" className="text-white">Stroke Size: {strokeSize}px</Label>
-                <input
-                  type="range"
-                  id="strokeSize"
-                  min="1"
-                  max="20"
-                  value={strokeSize}
-                  onChange={(e) => setStrokeSize(Number(e.target.value))}
-                  className="w-40"
-                />
-              </div>
-              <div>
-                
-                <button 
-                  onClick={toggleEraser} 
-                  style={{ 
-                      margin: '20%',
-                      cursor: 'pointer',
-                      border: isErasing ? '2px solid white' : 'none',
-                      backgroundColor: isErasing ? '#8f9296' : 'transparent',
-                      padding: '5px', 
-                  }}>
-                  <img src="/assets/icons/eraser.png" alt="buttonpng"  />
-                </button>
-              </div>
-            </div>
-            )}
+        </div>
 
-            <div>
-              <div className="absolute bottom-4 right-9 flex items-center gap-2" style={{marginBottom: '50%'}}>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
-                  <img
-                    alt="03191"
-                    className="rounded-md"
-                    height={50}
-                    src="/assets/03191.jpg"
-                    style={{
-                      aspectRatio: "40/50",
-                      objectFit: "cover",
-                    }}
-                    width={40}
-                  />
-                </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419.jpg")}>
-                  <img
-                    alt="12419"
-                    className="rounded-md"
-                    height={50}
-                    src="/assets/12419.jpg"
-                    style={{
-                      aspectRatio: "40/50",
-                      objectFit: "cover",
-                    }}
-                    width={40}
-                  />
-                </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/048462.jpg")}>
-                  <img
-                    alt="048462"
-                    className="rounded-md"
-                    height={50}
-                    src="/assets/048462.jpg"
-                    style={{
-                      aspectRatio: "40/50",
-                      objectFit: "cover",
-                    }}
-                    width={40}
-                  />
-                </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/050915.jpg")}>
-                  <img
-                    alt="050915"
-                    className="rounded-md"
-                    height={50}
-                    src="/assets/050915.jpg"
-                    style={{
-                      aspectRatio: "40/50",
-                      objectFit: "cover",
-                    }}
-                    width={40}
-                  />
-                </Button>
-                <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/052012.jpg")}>
-                  <img
-                    alt="052012"
-                    className="rounded-md"
-                    height={50}
-                    src="/assets/052012.jpg"
-                    style={{
-                      aspectRatio: "40/50",
-                      objectFit: "cover",
-                    }}
-                    width={40}
-                  />
-                </Button>
-              </div>
-            </div>
-          </div>
+      {showCanvas && (
+      <div className="flex flex-row justify-center items-center space-x-8 mt-2">
+        {/* Contenitore per il cursore e la scritta */}
+        <div className="flex flex-col items-center">
+          <Label htmlFor="strokeSize" className="text-white mb-2">Stroke Size: {strokeSize}px</Label>
+          <input
+            type="range"
+            id="strokeSize"
+            min="1"
+            max="20"
+            value={strokeSize}
+            onChange={(e) => setStrokeSize(Number(e.target.value))}
+            className="w-40"
+          />
+        </div>
+
+        {/* Contenitore per la gomma */}
+        <div className="flex items-center">
+          <button
+            onClick={toggleEraser}
+            style={{
+              cursor: 'pointer',
+              border: isErasing ? '2px solid white' : 'none',
+              backgroundColor: isErasing ? '#8f9296' : 'transparent',
+              padding: '5px',
+            }}
+            className="w-8 h-8 md:w-10 md:h-10" // Dimensioni della gomma ridotte proporzionalmente
+          >
+            <img src="/assets/icons/eraser.png" alt="eraser-icon" />
+          </button>
+        </div>
+      </div>
+    )}
+
+
+        {/* Galleria di immagini sotto il canvas e gli strumenti */}
+        <div className="flex flex-wrap justify-center items-center gap-4 mt-4">
+          <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/03191.jpg")}>
+            <img
+              alt="03191"
+              className="rounded-md"
+              height={50}
+              src="/assets/03191.jpg"
+              style={{
+                aspectRatio: "40/50",
+                objectFit: "cover",
+              }}
+              width={40}
+            />
+          </Button>
+          <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/12419.jpg")}>
+            <img
+              alt="12419"
+              className="rounded-md"
+              height={50}
+              src="/assets/12419.jpg"
+              style={{
+                aspectRatio: "40/50",
+                objectFit: "cover",
+              }}
+              width={40}
+            />
+          </Button>
+          <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/048462.jpg")}>
+            <img
+              alt="048462"
+              className="rounded-md"
+              height={50}
+              src="/assets/048462.jpg"
+              style={{
+                aspectRatio: "40/50",
+                objectFit: "cover",
+              }}
+              width={40}
+            />
+          </Button>
+          <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/050915.jpg")}>
+            <img
+              alt="050915"
+              className="rounded-md"
+              height={50}
+              src="/assets/050915.jpg"
+              style={{
+                aspectRatio: "40/50",
+                objectFit: "cover",
+              }}
+              width={40}
+            />
+          </Button>
+          <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/052012.jpg")}>
+            <img
+              alt="052012"
+              className="rounded-md"
+              height={50}
+              src="/assets/052012.jpg"
+              style={{
+                aspectRatio: "40/50",
+                objectFit: "cover",
+              }}
+              width={40}
+            />
+          </Button>
+        </div>
+      </div>
+  
           
           <div className="p-8 space-y-6" style={{backgroundColor: '#111827'}}>
           <h1 className="text-3xl font-bold" style={{color: 'white'}}>Draw your design!</h1>
@@ -547,7 +551,7 @@ export function Component() {
                 )}
                 
               </div>
-              </div>
+        </div>
               <div className="balloon-container space-y-2 flex flex-col">
   {textualInputs.map((text, index) => {
     const placeholders = [
