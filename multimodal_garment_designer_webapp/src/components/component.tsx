@@ -183,10 +183,10 @@ export function Component() {
                       }
 
                       // Codice per scaricare l'immagine
-                      const link = document.createElement('a');
-                      link.href = dataUrl;
-                      link.download = 'design_image.jpeg';
-                      link.click(); // Simula il clic per scaricare l'immagine
+                      //const link = document.createElement('a');
+                      //link.href = dataUrl;
+                      //link.download = 'design_image.jpeg';
+                      //link.click(); // Simula il clic per scaricare l'immagine
 
                       let jsonData;
 
