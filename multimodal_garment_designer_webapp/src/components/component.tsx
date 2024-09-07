@@ -13,7 +13,7 @@ function Spinner() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center z-50">
       <span className="loader"></span>
-      <p className="mt-8 text-white text-lg font-bold text-center p-2 rounded">We are sewing pixels to measure.... Your garment is almost ready!</p>
+      <p className="mt-8 text-white text-lg font-bold text-center p-2 rounded">We are sewing pixels to measure.... Your design is almost ready!</p>
     {/*<div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>*/}
     </div>
   );
@@ -50,12 +50,14 @@ export function Component() {
 
   // Senteces for each model
   const imageSentences: { [key: string]: React.ReactNode } = {
-    "/assets/03191.jpg": <span>Britney is ready for a stylish top. Choose from <b>t-shirts</b>, <b>blouses</b>, or <b>jackets</b></span>,
-    "/assets/12419.jpg": <span>Serena s look needs a new <b>shirt</b>. Design a fashionable <b>top</b> for her outfit.</span>,
-    "/assets/048462.jpg": <span>Jessica is all set for a new <b>top</b>. Create something unique like a <b>blouse</b> or <b>sweater</b>.</span>,
-    "/assets/050915.jpg": <span>Adrian is in search of the perfect pair of <b>pants</b>. Design <b>trousers</b> or <b>jeans</b> for his look.</span>,
-    "/assets/052012.jpg": <span>Claudia s entire outfit is up for <b>grabs</b>. Dress her in a new full <b>ensemble</b> from head to toe.</span>
-  };
+    "/assets/03191.jpg": <span><b>Britney</b>: is possible to design <b>shirts</b>, <b>long-sleeved tops</b>, <b>sweaters</b>, or <b>bikinis</b>.</span>,
+    "/assets/12419.jpg": <span><b>Serena</b>: is possible to design <b>tops</b> or <b>strapless shirts</b>.</span>,
+    "/assets/048462.jpg": <span><b>Jessica</b>: is possible to design <b>blouses</b> or <b>sweaters</b>.</span>,
+    "/assets/050915.jpg": <span><b>Adrian</b>: is possible to design only <b>pants</b> and <b>shorts</b>.</span>,
+    "/assets/052012.jpg": <span><b>Claudia</b>: is possible to design a <b>long dress</b>.</span>
+};
+
+
 
   // New state for stroke size
   const [strokeSize, setStrokeSize] = useState<number>(5);
@@ -487,6 +489,7 @@ export function Component() {
               width={40}
             />
           </Button>
+          {/*
           <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/048462.jpg")}>
             <img
               alt="048462"
@@ -499,7 +502,9 @@ export function Component() {
               }}
               width={40}
             />
+            
           </Button>
+          */}
           <Button size="icon" variant="outline" onClick={() => handleImageChange("/assets/050915.jpg")}>
             <img
               alt="050915"
@@ -531,7 +536,7 @@ export function Component() {
   
           
           <div className="p-8 space-y-6" style={{backgroundColor: '#111827'}}>
-          <h1 className="text-3xl font-bold" style={{color: 'white'}}>Draw your design!</h1>
+          <h1 className="text-3xl font-bold" style={{color: 'white'}}>Realize your design!</h1>
             <div className="space-y-4 flex flex-col">
               <div>
                 <div className="relative">
