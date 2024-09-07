@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { alertService } from "@/services/alert.service";
-import domtoimage from 'dom-to-image-more';
+//import domtoimagemore from 'dom-to-image-more';
+import html2canvas from 'html2canvas';
 import Image from 'next/image';
 
 // Spinner Component
@@ -156,89 +157,110 @@ export function Component() {
   };
 
   const handleGenerateDesign = () => {
-    if (canvasRef.current) {
-      console.log("canvas");
-      if (textualInputs[0] !== '' && textualInputs[1] != '' && textualInputs[2] != ''){
-        domtoimage.toJpeg(canvasRef.current, { quality: 0.95 })
-          .then(async function (dataUrl) {
-            const encodedImage = dataUrl.split(',')[1];
-            const sentences: Sentences = {};
-            const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
-  
-            if (!sentences[modelNumber]) {
-              sentences[modelNumber] = [...textualInputs];
-            }
-  
-            let jsonData;
+      if (canvasRef.current) {
+          console.log("canvas");
+          if (textualInputs[0] !== '' && textualInputs[1] !== '' && textualInputs[2] !== '') {
+              // Usa html2canvas per catturare il canvas con sfondo nero e disegno bianco
+              html2canvas(canvasRef.current, {
+                backgroundColor: '#000000', // Imposta lo sfondo nero
+                allowTaint: true,
+                useCORS: true
+              }).then(async function (canvas) {
+                // Disegna in bianco
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                  ctx.globalCompositeOperation = 'source-over'; // Modalità normale per disegno
+                  ctx.fillStyle = 'white'; // Imposta il colore di disegno a bianco
+                }
 
-            if (modelNumber === '03191' || modelNumber === '12419') {
-              jsonData = {
-                "vitonhd": sentences,
-                "image": encodedImage
-              };
-            } else if (modelNumber === '048462') {
-              jsonData = {
-                "dresscode": sentences,
-                "image": encodedImage,
-                "body_part": "upper_body"
-              };
-            } else if (modelNumber === '050915') {
-              jsonData = {
-                "dresscode": sentences,
-                "image": encodedImage,
-                "body_part": "lower_body"
-              };
-            } else if (modelNumber === '052012') {
-              jsonData = {
-                "dresscode": sentences,
-                "image": encodedImage,
-                "body_part": "dresses"
-              };
-            } else {
-              console.error('Model number not recognized:', modelNumber);
-              alertService.error('Error : Unrecognized model number');
-              setLoading(false);
-              return;
-            }
-  
-            try {
-              setLoading(true);
-  
-              const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(jsonData),
-              });
-  
-              const blob = await response.blob();
-              const url = window.URL.createObjectURL(blob);
-  
-              // Aggiorna l'URL dell'immagine generata
-              setGeneratedImageUrl(url);
-  
-              // Aggiorna l'immagine visualizzata
-              const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
-              if (latestDesignImg) {
-                latestDesignImg.src = url;
-              }
-            } catch (error) {
-              console.error('Errore nella generazione del design:', error);
-            } finally {
-              setLoading(false);
-            }
-          })
-          .catch(function (error) {
-            console.error('Errore nella generazione del design:', error);
-          });
+                      const dataUrl = canvas.toDataURL("image/jpeg", 0.95); // Converte il canvas in un JPEG
+                      const encodedImage = dataUrl.split(',')[1];
+                      const sentences: Sentences = {};
+                      const modelNumber = currentImage.split('/').pop()?.split('.')[0] || "Unknown Model";
+
+                      if (!sentences[modelNumber]) {
+                          sentences[modelNumber] = [...textualInputs];
+                      }
+
+                      // Codice per scaricare l'immagine
+                      const link = document.createElement('a');
+                      link.href = dataUrl;
+                      link.download = 'design_image.jpeg';
+                      link.click(); // Simula il clic per scaricare l'immagine
+
+                      let jsonData;
+
+                      // Costruzione dei dati JSON in base al modello
+                      if (modelNumber === '03191' || modelNumber === '12419') {
+                          jsonData = {
+                              "vitonhd": sentences,
+                              "image": encodedImage
+                          };
+                      } else if (modelNumber === '048462') {
+                          jsonData = {
+                              "dresscode": sentences,
+                              "image": encodedImage,
+                              "body_part": "upper_body"
+                          };
+                      } else if (modelNumber === '050915') {
+                          jsonData = {
+                              "dresscode": sentences,
+                              "image": encodedImage,
+                              "body_part": "lower_body"
+                          };
+                      } else if (modelNumber === '052012') {
+                          jsonData = {
+                              "dresscode": sentences,
+                              "image": encodedImage,
+                              "body_part": "dresses"
+                          };
+                      } else {
+                          console.error('Model number not recognized:', modelNumber);
+                          alertService.error('Error : Unrecognized model number');
+                          setLoading(false);
+                          return;
+                      }
+
+                      try {
+                          setLoading(true);
+
+                          // Invio della richiesta al server
+                          const response = await fetch('https://capagio-garment-designer.hf.space/generate-design', {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify(jsonData),
+                          });
+
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+
+                          // Aggiorna l'URL dell'immagine generata
+                          setGeneratedImageUrl(url);
+
+                          // Aggiorna l'immagine visualizzata
+                          const latestDesignImg = document.querySelector('img[alt="Latest Generated Design"]') as HTMLImageElement;
+                          if (latestDesignImg) {
+                              latestDesignImg.src = url;
+                          }
+                      } catch (error) {
+                          console.error('Errore nella generazione del design:', error);
+                      } finally {
+                          setLoading(false);
+                      }
+                  })
+                  .catch(function (error) {
+                      console.error('Errore nella generazione del design con html2canvas:', error);
+                  });
+          } else {
+              alertService.error('Error : Exactly three textual inputs must be inserted to generate a dress');
+          }
       } else {
-        alertService.error('Error : Exactly three textual inputs must be inserted to generate a dress')
+          alertService.error('Error : Cannot generate image if no canvas has been edited');
       }
-    } else {
-      alertService.error('Error : Cannot generate image if no canvas has been edited')
-    }
   };
+
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if(canvasContext){
