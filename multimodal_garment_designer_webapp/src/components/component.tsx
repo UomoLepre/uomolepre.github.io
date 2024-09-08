@@ -553,6 +553,18 @@ export function Component() {
             />
           </Button>
         </div>
+
+        <div className="flex flex-wrap flex-col justify-center items-center gap-2 mt-4"> 
+                <Label style={{textAlign: 'center', display: 'block', color: 'white'}} >Draw on the Model</Label>
+                <div className="flex items-center justify-center" style={{marginTop: '10px'}}>
+                  <Button className="mr-2" size="icon" variant="outline" onClick={handleToggleCanvas}>
+                    <PencilIcon className="w-5 h-5" />
+                  </Button>
+                  <Button size="icon" variant="outline" onClick={clearCanvas}>
+                    <TrashIcon className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
       </div>
   
           
@@ -639,17 +651,7 @@ export function Component() {
     );
   })}
 </div>
-              <div>
-                <Label style={{textAlign: 'center', display: 'block', color: 'white'}} >Draw on the Model</Label>
-                <div className="flex items-center justify-center" style={{marginTop: '10px'}}>
-                  <Button className="mr-2" size="icon" variant="outline" onClick={handleToggleCanvas}>
-                    <PencilIcon className="w-5 h-5" />
-                  </Button>
-                  <Button size="icon" variant="outline" onClick={clearCanvas}>
-                    <TrashIcon className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
+              
             </div>
             <div className="balloon-container space-y-2" />
             <Button className="w-full"   style={{
