@@ -5,5 +5,5 @@ As in many industries, the fashion world is increasingly embracing artificial in
 
 [Try the application here!](https://uomolepre-github-io.vercel.app/)
 
-![alt text](image.png)
+![alt text](homepage.png)
 
