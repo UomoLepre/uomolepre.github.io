@@ -54,7 +54,7 @@ export function Component() {
     "/assets/12419.jpg": <span><b>Serena</b>: is possible to design <b>tops</b> or <b>strapless shirts</b>.</span>,
     "/assets/048462.jpg": <span><b>Jessica</b>: is possible to design <b>blouses</b> or <b>sweaters</b>.</span>,
     "/assets/050915.jpg": <span><b>Adrian</b>: is possible to design only <b>pants</b> and <b>shorts</b>.</span>,
-    "/assets/052012.jpg": <span><b>Claudia</b>: is possible to design a <b>long dress</b>.</span>
+    "/assets/052012.jpg": <span><b>Claudia</b>: is possible to design a <b>long dress</b> or a <b>short dress</b>.</span>
 };
 
   // State to manage the latest generated design image per model
