@@ -57,6 +57,25 @@ export function Component() {
     "/assets/052012.jpg": <span><b>Claudia</b>: is possible to design a <b>long dress</b>.</span>
 };
 
+  // State to manage the latest generated design image per model
+  const modelGeneratedImages: { [key: string]: string } = {
+    "/assets/03191.jpg": "/assets/britney.jpeg",
+    "/assets/12419.jpg": "/assets/serena.jpeg",
+    "/assets/050915.jpg": "/assets/adrian.jpeg",
+    "/assets/052012.jpg": "/assets/claudia.jpeg",
+  };
+
+  const modelPlaceholders: { [key: string]: string[] } = {
+    "/assets/03191.jpg":  ["Blue cotton shirt", "Small buttons", "Dark color"],
+    "/assets/12419.jpg": ["A strapless yellow silk top", "It featurea a bow at chestlevel", "Shiny reflexes on the bottom"],
+    "/assets/048462.jpg": ["", "", ""],
+    "/assets/050915.jpg": ["Straight-leg style with a classic fit", "Soft cotton", "A checkerred pattern "],
+    "/assets/052012.jpg": ["Long red silk dress", "Split to the side", "It has a band at waist height"],
+  };
+  
+
+  // Add this state to manage the current latest generated design image
+  const [latestGeneratedImage, setLatestGeneratedImage] = useState<string>(modelGeneratedImages[currentImage]);
 
 
   // New state for stroke size
@@ -149,6 +168,8 @@ export function Component() {
     setCurrentSentence(imageSentences[newImage] || "");
     setShowCanvas(false); // Hide canvas when image changes
     clearCanvas()
+    // Update latest generated design image
+    setLatestGeneratedImage(modelGeneratedImages[newImage]);
   }
 
   // Event handler to remove a textual input
@@ -581,13 +602,14 @@ export function Component() {
         </div>
               <div className="balloon-container space-y-2 flex flex-col">
   {textualInputs.map((text, index) => {
-    const placeholders = [
-      "Color red",
-      "Long sleeves shirt",
-      "Single color"
+    const placeholders = modelPlaceholders[currentImage] || [
+      "Default Color",
+      "Default Style",
+      "Default Fabric"
     ];
 
     
+    // Usa il placeholder corretto per ogni index
     const displayText = text || placeholders[index % placeholders.length];
 
     return (
@@ -656,7 +678,7 @@ export function Component() {
                 alt="Latest Generated Design"
                 className="rounded-lg"
                 height={375}
-                src="/placeholder.svg"
+                src={latestGeneratedImage}
                 style={{
                   aspectRatio: "300/375",
                   objectFit: "cover",
