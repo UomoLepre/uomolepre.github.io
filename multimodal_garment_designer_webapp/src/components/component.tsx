@@ -408,7 +408,7 @@ export function Component() {
   return (
     
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 dark:bg-gray-950 p-4 md:p-8" style={{backgroundColor: '#09101f'}}>  
-      <div className="max-w-4xl w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
+      <div className="max-w-4xl w-full bg-gray-900 dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="relative flex flex-col items-center bg-gray-800 dark:bg-gray-800 p-8">
             {/* Testo sopra l'immagine */}
