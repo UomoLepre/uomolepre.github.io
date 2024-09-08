@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24" style={{backgroundColor: 'black'}}>
+    <main className="flex min-h-screen flex-col items-center justify-between p-12" style={{backgroundColor: '#09101f'}}>
       <Component />
       <div className="container">
         <Alert />
